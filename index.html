@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encuesta a graduados · FO-UNNE · PEDI 2027–2032</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#13294b; --navy-2:#23406e; --gold:#c8a13a;
+  --ink:#1c2433; --muted:#5a6475; --line:#d8dde6;
+  --bg:#eef1f5; --card:#fff; --err:#b3261e; --sel:#f1f4f9;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Archivo',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.narrow{font-family:'Archivo Narrow','Arial Narrow',system-ui,sans-serif}
+
+header.top{background:var(--navy);color:#fff;padding:14px 16px 12px}
+.top-in{max-width:640px;margin:0 auto}
+.inst{font-size:.9rem;opacity:.85}
+.progress{display:flex;gap:4px;margin-top:10px}
+.progress i{flex:1;height:4px;background:rgba(255,255,255,.22);border-radius:2px}
+.progress i.on{background:var(--gold)}
+.steplabel{font-weight:600;margin-top:6px;font-size:1rem}
+
+main{max-width:640px;margin:0 auto;padding:20px 16px 130px}
+
+.intro{padding:12px 4px 0}
+.intro .rule{width:48px;height:4px;background:var(--gold);margin-top:12px}
+.intro h1{font-size:clamp(1.85rem,6.5vw,2.5rem);line-height:1.08;color:var(--navy);margin:14px 0 18px;font-weight:700;letter-spacing:-.01em}
+.intro p{max-width:60ch;margin:0 0 14px}
+.intro .facts{color:var(--muted);font-size:.95rem;border-left:3px solid var(--line);padding-left:12px}
+
+.q{margin:0 0 14px;padding:18px 16px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:0}
+.q[hidden]{display:none}
+.q.invalid{border-color:var(--err)}
+.q legend{float:left;width:100%;padding:0;font-weight:600;line-height:1.35}
+.qn{color:var(--navy-2);margin-right:4px}
+.hint{clear:both;color:var(--muted);font-size:.9rem;margin:6px 0 0}
+.body{clear:both;padding-top:4px}
+
+.opt{position:relative;display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;margin-top:8px;cursor:pointer;background:#fff}
+.opt input{position:absolute;opacity:0;width:1px;height:1px}
+.mark{flex:none;width:20px;height:20px;border:2px solid #9aa4b5;border-radius:50%;background:#fff}
+.opt input[type=checkbox]+.mark{border-radius:5px}
+.opt input:checked+.mark{border-color:var(--navy);background:var(--navy);box-shadow:inset 0 0 0 3px #fff}
+.opt:has(input:checked){border-color:var(--navy-2);background:var(--sel)}
+.opt:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.grp{color:var(--muted);font-size:.92rem;margin:16px 0 0}
+.grp:first-child{margin-top:6px}
+
+.otro,textarea,.email{display:block;width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-top:8px;background:#fff;color:var(--ink)}
+.otro[hidden]{display:none}
+textarea{min-height:110px;resize:vertical}
+.otro:focus,textarea:focus,.email:focus{outline:3px solid var(--gold);outline-offset:1px;border-color:var(--navy-2)}
+
+.gr{padding:12px 0 4px;border-top:1px solid var(--line)}
+.gr:first-child{border-top:0;padding-top:6px}
+.gl{font-size:.97rem}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+.scale.c4{grid-template-columns:repeat(4,1fr)}
+.scale.c11{grid-template-columns:repeat(11,1fr);gap:3px}
+.pill{position:relative;display:block}
+.pill input{position:absolute;opacity:0;width:1px;height:1px}
+.pill span{display:block;text-align:center;padding:9px 0;border:1px solid var(--line);border-radius:6px;font-weight:600;cursor:pointer;background:#fff;font-size:.95rem}
+.c4 .pill span{font-size:.86rem;font-weight:500}
+.c11 .pill span{font-size:.85rem;padding:9px 0}
+.pill input:checked+span{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pill input:focus-visible+span{outline:3px solid var(--gold);outline-offset:1px}
+.ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:6px;gap:12px}
+
+.fac{margin-top:16px;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fafbfc}
+.fac:first-child{margin-top:6px}
+.fac h3{font-size:1rem;margin:0;color:var(--navy);font-weight:600}
+
+.err{color:var(--err);font-size:.92rem;margin:10px 0 0}
+.err:empty{display:none}
+
+nav.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+nav.bar[hidden]{display:none}
+.bar-in{max-width:640px;margin:0 auto;display:flex;gap:10px}
+.btn{font:inherit;font-weight:600;padding:12px 20px;border-radius:8px;border:1px solid var(--navy);cursor:pointer}
+.btn.primary{background:var(--navy);color:#fff;flex:1}
+.btn.ghost{background:#fff;color:var(--navy)}
+.btn[disabled]{opacity:.6;cursor:wait}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn.solo{width:100%;margin-top:10px}
+.senderr{color:var(--err);font-size:.95rem;margin:0 0 14px}
+.senderr:empty{display:none}
+.scale.c6{grid-template-columns:repeat(6,1fr)}
+.mark.rank{display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:.78rem;font-weight:700;color:var(--navy);width:26px;height:26px}
+.opt.ranked .mark.rank{background:var(--navy);color:#fff;border-color:var(--navy);box-shadow:none}
+.opt.ranked{border-color:var(--navy-2);background:var(--sel)}
+.q .email + .email{margin-top:8px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="inst narrow">Facultad de Odontología, UNNE. Plan Estratégico 2027–2032</div>
+    <div id="prog" hidden>
+      <div class="progress" id="bars"></div>
+      <div class="steplabel" id="steplabel"></div>
+    </div>
+  </div>
+</header>
+
+<main id="main" aria-live="polite"></main>
+
+<nav class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <button class="btn ghost" id="prev" type="button">Anterior</button>
+    <button class="btn primary" id="next" type="button">Siguiente</button>
+  </div>
+</nav>
+
+<script>
+/* ===== Configuración ===== */
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbwOoKXZ_QKqd5ddm6fVYrJaxRw7xt_JmXA8DXmpSp7HSOCv-jkyBZHm4gGk8ASQYvvqIg/exec';   // URL /exec de la implementación
+const DRAFT_KEY = 'founne_graduados_v2';
+
+const STEPS = ['Sobre vos','Inserción laboral','Tu experiencia','Posgrado','Prioridades para la Facultad'];
+
+const Q = [
+  {id:'q1',n:1,step:0,type:'single',text:'¿Tenés actualmente algún cargo en la FOUNNE (docente, investigación o no docente)?',opts:['Sí','No']},
+  {id:'q2',n:2,step:0,type:'single',text:'Año de egreso',opts:['Antes de 2000','2000–2009','2010–2019','2020 en adelante']},
+  {id:'q3',n:3,step:0,type:'single',text:'Provincia donde vivís',opts:['Corrientes','Chaco','Misiones','Formosa','Otra provincia','Exterior']},
+  {id:'q4',n:4,step:0,type:'single',text:'¿Ejercés actualmente la odontología?',opts:['Sí','Ejercí, pero ya no ejerzo','Nunca ejercí']},
+  {id:'q5',n:5,step:0,type:'multi',text:'Ámbito de trabajo actual',hint:'Podés marcar varias opciones.',opts:['Consultorio propio','Consultorio o clínica de terceros','Sector público','Obra social o prepaga','Docencia o investigación','Otro'],other:'Otro',
+    show:a=>a.q4==='Sí'},
+
+  {id:'q6',n:6,step:1,type:'single',text:'¿Cuánto tardaste en iniciarte como odontólogo/a?',opts:['Ya trabajaba antes de recibirme','Menos de 6 meses','Entre 6 y 12 meses','Entre 1 y 2 años','Más de 2 años'],
+    show:a=>a.q4 && a.q4!=='Nunca ejercí'},
+  {id:'q7',n:7,step:1,type:'rank',max:3,text:'¿Qué fue lo que más te costó al insertarte?',
+    hint:'Tocá hasta 3 opciones, en orden: primero la que más te costó.',
+    opts:['Inversión para equipar un consultorio','Acceso a financiamiento o crédito','Trámites de matriculación y habilitación','Facturación y aranceles de obras sociales','Gestión administrativa e impositiva','Conseguir pacientes','Darme a conocer, redes y comunicación','Conseguir empleo en relación de dependencia','Falta de práctica clínica al egresar','Casos complejos o urgencias','Trabajar sin supervisión','Bioseguridad y manejo de residuos','Competencia y saturación en la zona','Tener que mudarme de localidad','Acceso a posgrado','Conciliar el trabajo con la vida personal','Otro'],other:'Otro',
+    show:a=>a.q4 && a.q4!=='Nunca ejercí'},
+  {id:'q8',n:8,step:1,type:'grid',text:'¿Qué tan preparado/a saliste de la Facultad en cada área?',ends:['0 Nada preparado/a','5 Muy preparado/a'],values:[0,1,2,3,4,5],
+    rows:['Clínica general','Especialidades clínicas','Urgencias','Odontología digital y tecnología','Comunicación con pacientes','Gestión del consultorio','Aspectos éticos y legales']},
+
+  {id:'q9',n:9,step:2,type:'fields',text:'¿Qué elementos de la formación de la FOUNNE fueron centrales para tu desempeño?',hint:'Nombrá al menos tres.',
+    fields:['Primer elemento','Segundo elemento','Tercer elemento']},
+  {id:'q10',n:10,step:2,type:'text',text:'¿Cuál es hoy tu principal desafío profesional?',hint:'Opcional.'},
+
+  {id:'q11',n:11,step:3,type:'single',text:'¿Hiciste o estás haciendo formación de posgrado?',opts:['Sí, especialización','Sí, maestría o doctorado','Solo cursos','No']},
+  {id:'q12',n:12,step:3,type:'multi',text:'¿Dónde la hiciste?',hint:'Podés marcar varias opciones.',opts:['FOUNNE','Otra universidad pública','Universidad privada','Colegio o Círculo Odontológico','Otra entidad privada','En el exterior','Otra'],other:'Otra',
+    show:a=>a.q11 && a.q11!=='No'},
+  {id:'q13',n:13,step:3,type:'multi',max:3,text:'¿Por qué elegiste hacer posgrado fuera de la FOUNNE?',hint:'Elegí hasta 3 opciones.',opts:['No ofrecía lo que buscaba','Costo','Horarios o modalidad','Distancia','Cupos','Prestigio o reconocimiento de la otra institución','Calidad del cuerpo docente','Práctica clínica que ofrecía la otra institución','Recomendación de colegas','Otro'],other:'Otro',
+    show:a=>a.q11 && a.q11!=='No' && (a.q12||[]).some(x=>x!=='FOUNNE')},
+
+  {id:'q14',n:14,step:4,type:'nps',text:'¿Recomendarías estudiar Odontología en la FOUNNE?',ends:['0 Nada probable','10 Muy probable']},
+  {id:'q15',n:15,step:4,type:'multi',min:2,max:2,text:'¿En qué dimensiones debería mejorar primero la Facultad?',hint:'Elegí 2 opciones.',opts:['Plan de estudios','Práctica clínica','Posgrado y formación continua','Vínculo con graduados','Infraestructura y equipamiento','Investigación','Vínculo con la comunidad y el sector salud','Gestión institucional']},
+  {id:'q16',n:16,step:4,type:'text',text:'Si pudieras pedirle una sola cosa a la Facultad para los próximos 5 años, ¿qué sería?',hint:'Opcional.'},
+  {id:'q17',n:17,step:4,type:'single',text:'¿Te interesaría participar en actividades con la Facultad?',opts:['Sí','No']},
+  {id:'q17_det',n:'',step:4,type:'text',text:'¿En qué te gustaría participar?',hint:'Contanos con tus palabras.',
+    show:a=>a.q17==='Sí'},
+  {id:'q17_email',n:'',step:4,type:'email',text:'Dejanos un email para contactarte',hint:'Opcional. Se guarda separado de tus respuestas en el análisis.',
+    show:a=>a.q17==='Sí'}
+];
+
+/* ===== Estado ===== */
+let A = {};
+let step = -1;           // -1 intro, STEPS.length = gracias
+let startedAt = Date.now();
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+const vis = q => !q.show || !!q.show(A);
+const byId = id => Q.find(q=>q.id===id);
+
+function saveDraft(){
+  try{ localStorage.setItem(DRAFT_KEY, JSON.stringify({A,step,startedAt})); }catch(e){}
+}
+function loadDraft(){
+  try{
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');
+    if(d && d.A){ A = d.A; startedAt = d.startedAt||Date.now(); return d.step; }
+  }catch(e){}
+  return null;
+}
+function clearDraft(){ try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+function hasDraft(){ try{ return !!localStorage.getItem(DRAFT_KEY); }catch(e){ return false; } }
+
+/* ===== Render ===== */
+function otroHtml(q, shown){
+  return `<input class="otro" type="text" data-otro="${q.id}" placeholder="¿Cuál?" aria-label="Especificá: ${esc(q.text)}" value="${esc(A[q.id+'_otro']||'')}"${shown?'':' hidden'}>`;
+}
+function optHtml(q,o){
+  const type = q.type==='single' ? 'radio' : 'checkbox';
+  const checked = q.type==='single' ? A[q.id]===o : (A[q.id]||[]).includes(o);
+  let h = `<label class="opt"><input type="${type}" name="${q.id}" value="${esc(o)}"${checked?' checked':''}><span class="mark"></span><span>${esc(o)}</span></label>`;
+  if(q.other===o) h += otroHtml(q, checked);
+  return h;
+}
+function rankHtml(q){
+  const sel = A[q.id]||[];
+  let h = q.opts.map(o=>{
+    const i = sel.indexOf(o);
+    const checked = i>=0;
+    let s = `<label class="opt${checked?' ranked':''}"><input type="checkbox" name="${q.id}" value="${esc(o)}"${checked?' checked':''}><span class="mark rank">${checked?(i+1)+'º':''}</span><span>${esc(o)}</span></label>`;
+    if(q.other===o) s += otroHtml(q, checked);
+    return s;
+  }).join('');
+  return h;
+}
+function scaleHtml(name, values, current, cls){
+  return `<div class="scale ${cls||''}">${values.map(v=>
+    `<label class="pill"><input type="radio" name="${name}" value="${esc(v)}"${String(current)===String(v)?' checked':''}><span>${esc(v)}</span></label>`
+  ).join('')}</div>`;
+}
+function endsHtml(q){ return q.ends ? `<div class="ends"><span>${esc(q.ends[0])}</span><span>${esc(q.ends[1])}</span></div>` : ''; }
+
+function bodyHtml(q){
+  switch(q.type){
+    case 'single': case 'multi':
+      return q.opts.map(o => typeof o==='object' ? `<div class="grp narrow">${esc(o.h)}</div>` : optHtml(q,o)).join('');
+    case 'rank':
+      return rankHtml(q);
+    case 'grid': {
+      const vals = q.values || [1,2,3,4,5];
+      return q.rows.map((r,ri)=>`<div class="gr"><div class="gl">${esc(r)}</div>${scaleHtml(`${q.id}__${ri}`,vals,(A[q.id]||{})[r],vals.length===6?'c6':'')}</div>`).join('') + endsHtml(q);
+    }
+    case 'nps':
+      return scaleHtml(q.id,[0,1,2,3,4,5,6,7,8,9,10],A[q.id],'c11') + endsHtml(q);
+    case 'fields':
+      return q.fields.map((f,i)=>`<input class="email" type="text" data-text="${q.id}__${i}" placeholder="${esc(f)}" aria-label="${esc(f)}" value="${esc((A[q.id]||[])[i]||'')}">`).join('');
+    case 'text':
+      return `<textarea data-text="${q.id}" aria-label="${esc(q.text)}">${esc(A[q.id]||'')}</textarea>`;
+    case 'email':
+      return `<input class="email" type="email" inputmode="email" autocomplete="email" data-text="${q.id}" aria-label="${esc(q.text)}" value="${esc(A[q.id]||'')}">`;
+  }
+}
+
+function qHtml(q){
+  return `<fieldset class="q" id="w_${q.id}"${vis(q)?'':' hidden'}>
+    <legend>${q.n!==''?`<span class="qn narrow">${q.n}.</span>`:''}${esc(q.text)}</legend>
+    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:''}
+    <div class="body" id="b_${q.id}">${bodyHtml(q)}</div>
+    <p class="err" id="e_${q.id}" role="alert"></p>
+  </fieldset>`;
+}
+
+function render(){
+  const main = $('#main'), bar = $('#bar');
+  window.scrollTo(0,0);
+
+  if(step<0){
+    $('#prog').hidden = true; bar.hidden = true;
+    const resuming = hasDraft();
+    main.innerHTML = `<section class="intro">
+      <div class="rule"></div>
+      <h1>Encuesta a graduados en ejercicio profesional</h1>
+      <p>La Facultad de Odontología de la UNNE está elaborando su Plan Estratégico de Desarrollo Institucional 2027–2032. Queremos saber cómo fue tu inserción laboral, cómo ves la formación que recibiste y qué debería mejorar la Facultad.</p>
+      <p class="facts">Lleva unos 8 minutos. Es anónima: el email del final es opcional.</p>
+      <button class="btn primary solo" id="start" type="button">${resuming?'Continuar la encuesta':'Empezar la encuesta'}</button>
+    </section>`;
+    $('#start').onclick = ()=>{ const s = loadDraft(); step = (s!==null && s>=0 && s<STEPS.length) ? s : 0; if(s===null) startedAt = Date.now(); render(); };
+    return;
+  }
+
+  if(step>=STEPS.length){
+    $('#prog').hidden = true; bar.hidden = true;
+    main.innerHTML = `<section class="intro">
+      <div class="rule"></div>
+      <h1>Respuestas enviadas</h1>
+      <p>Gracias por tu tiempo. Lo que respondiste se va a usar en el diagnóstico del Plan Estratégico de la Facultad.</p>
+      ${ENDPOINT.startsWith('PEGAR')?'<p class="facts">Modo prueba: no hay URL de Apps Script configurada. Las respuestas se mostraron en la consola del navegador.</p>':''}
+    </section>`;
+    return;
+  }
+
+  $('#prog').hidden = false; bar.hidden = false;
+  $('#bars').innerHTML = STEPS.map((_,i)=>`<i class="${i<=step?'on':''}"></i>`).join('');
+  $('#steplabel').textContent = `Parte ${step+1} de ${STEPS.length}: ${STEPS[step]}`;
+  main.innerHTML = `<p class="senderr" id="senderr" role="alert"></p>` + Q.filter(q=>q.step===step).map(qHtml).join('');
+  $('#prev').textContent = step===0 ? 'Volver al inicio' : 'Anterior';
+  $('#next').textContent = step===STEPS.length-1 ? 'Enviar respuestas' : 'Siguiente';
+  $('#next').disabled = false;
+}
+
+function updateVisibility(){
+  Q.filter(q=>q.step===step).forEach(q=>{
+    const w = document.getElementById('w_'+q.id);
+    if(w) w.hidden = !vis(q);
+  });
+}
+function setErr(id,msg){
+  const e = document.getElementById('e_'+id), w = document.getElementById('w_'+id);
+  if(e) e.textContent = msg||'';
+  if(w) w.classList.toggle('invalid', !!msg);
+}
+
+/* ===== Eventos ===== */
+$('#main').addEventListener('change', ev=>{
+  const t = ev.target;
+  if(!t.name) return;
+
+  if(t.name.includes('__')){                       // grillas 0–5
+    const [id,ri] = t.name.split('__');
+    const q = byId(id);
+    A[id] = A[id]||{};
+    A[id][q.rows[+ri]] = Number(t.value);
+    setErr(id,''); saveDraft(); return;
+  }
+
+  const q = byId(t.name);
+  if(!q) return;
+  setErr(q.id,'');
+
+  if(q.type==='single'){ A[q.id] = t.value; }
+  else if(q.type==='nps'){ A[q.id] = Number(t.value); }
+  else if(q.type==='rank'){
+    const sel = (A[q.id]||[]).slice();
+    const i = sel.indexOf(t.value);
+    if(t.checked && i<0){
+      if(sel.length>=q.max){ t.checked = false; setErr(q.id,`Elegí hasta ${q.max} opciones. Destocá una para cambiarla.`); }
+      else sel.push(t.value);
+    } else if(!t.checked && i>=0){ sel.splice(i,1); }
+    A[q.id] = sel;
+    document.getElementById('b_'+q.id).innerHTML = bodyHtml(q);
+  }
+  else if(q.type==='multi'){
+    const boxes = [...document.querySelectorAll(`input[name="${q.id}"]`)];
+    let sel = boxes.filter(b=>b.checked).map(b=>b.value);
+    if(q.max && sel.length>q.max){
+      t.checked = false;
+      sel = sel.filter(v=>v!==t.value);
+      setErr(q.id, q.min===q.max ? `Elegí ${q.max} opciones.` : `Elegí hasta ${q.max} opciones.`);
+    }
+    A[q.id] = sel;
+    if(q.other){
+      const o = document.querySelector(`[data-otro="${q.id}"]`);
+      if(o){ o.hidden = !sel.includes(q.other); if(!o.hidden && t.value===q.other && t.checked) o.focus(); }
+    }
+  }
+  updateVisibility(); saveDraft();
+});
+
+$('#main').addEventListener('input', ev=>{
+  const t = ev.target;
+  if(t.dataset.otro){ A[t.dataset.otro+'_otro'] = t.value; setErr(t.dataset.otro,''); }
+  if(t.dataset.text){
+    const k = t.dataset.text;
+    if(k.includes('__')){
+      const [id,i] = k.split('__');
+      A[id] = A[id]||[];
+      A[id][+i] = t.value;
+      setErr(id,'');
+    } else { A[k] = t.value; setErr(k,''); }
+  }
+  saveDraft();
+});
+
+/* ===== Validación ===== */
+function validate(q){
+  if(!vis(q)) return '';
+  switch(q.type){
+    case 'single': case 'nps':
+      return (A[q.id]===undefined || A[q.id]==='') ? 'Elegí una opción.' : '';
+    case 'multi': case 'rank': {
+      const sel = A[q.id]||[];
+      if(q.min && sel.length<q.min) return `Elegí ${q.min} opciones.`;
+      if(!sel.length) return q.type==='rank' ? 'Elegí al menos una opción.' : 'Elegí al menos una opción.';
+      if(q.other && sel.includes(q.other) && !(A[q.id+'_otro']||'').trim()) return 'Completá el campo "¿Cuál?".';
+      return '';
+    }
+    case 'grid':
+      return q.rows.every(r=>(A[q.id]||{})[r]!==undefined) ? '' : 'Respondé todas las filas.';
+    case 'fields': {
+      const v = A[q.id]||[];
+      const llenos = q.fields.filter((_,i)=>(v[i]||'').trim()).length;
+      return llenos < q.fields.length ? `Completá los ${q.fields.length} campos.` : '';
+    }
+    case 'email': {
+      const v = (A[q.id]||'').trim();
+      return (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ? 'Revisá el email: no tiene un formato válido.' : '';
+    }
+    default: return '';
+  }
+}
+function validateStep(){
+  let first = null;
+  Q.filter(q=>q.step===step).forEach(q=>{
+    const m = validate(q);
+    setErr(q.id,m);
+    if(m && !first) first = document.getElementById('w_'+q.id);
+  });
+  if(first){ first.scrollIntoView({behavior:'smooth',block:'start'}); return false; }
+  return true;
+}
+
+/* ===== Envío ===== */
+function buildPayload(){
+  const r = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,8),
+    version: 'v2',
+    duracion_min: Math.round((Date.now()-startedAt)/6000)/10
+  };
+  Q.forEach(q=>{
+    const on = vis(q);
+    switch(q.type){
+      case 'single': case 'nps': case 'text':
+        r[q.id] = on ? (A[q.id] ?? '') : ''; break;
+      case 'multi':
+        r[q.id] = on ? (A[q.id]||[]).join('; ') : '';
+        if(q.other) r[q.id+'_otro'] = on && (A[q.id]||[]).includes(q.other) ? (A[q.id+'_otro']||'').trim() : '';
+        break;
+      case 'rank': {
+        const sel = on ? (A[q.id]||[]) : [];
+        for(let i=0;i<q.max;i++) r[`${q.id}_${i+1}`] = sel[i] || '';
+        if(q.other) r[q.id+'_otro'] = sel.includes(q.other) ? (A[q.id+'_otro']||'').trim() : '';
+        break;
+      }
+      case 'grid':
+        q.rows.forEach(row=>{ r[`${q.id}_${slug(row)}`] = on ? ((A[q.id]||{})[row] ?? '') : ''; }); break;
+      case 'fields':
+        q.fields.forEach((_,i)=>{ r[`${q.id}_${i+1}`] = on ? ((A[q.id]||[])[i]||'').trim() : ''; }); break;
+      case 'email': break;
+    }
+  });
+  const email = vis(byId('q17_email')) ? (A.q17_email||'').trim() : '';
+  return {respuesta:r, comparacion:[], contacto: email ? {id:r.id, email} : null};
+}
+
+async function send(){
+  const btn = $('#next'), msg = $('#senderr');
+  const payload = buildPayload();
+  if(ENDPOINT.startsWith('PEGAR')){
+    console.log('Payload (modo prueba):', payload);
+    clearDraft(); step = STEPS.length; render(); return;
+  }
+  btn.disabled = true; btn.textContent = 'Enviando…'; msg.textContent = '';
+  try{
+    await fetch(ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    clearDraft(); A = {}; step = STEPS.length; render();
+  }catch(e){
+    btn.disabled = false; btn.textContent = 'Enviar respuestas';
+    msg.textContent = 'No se pudieron enviar las respuestas. Revisá tu conexión y volvé a tocar "Enviar respuestas".';
+    window.scrollTo(0,0);
+  }
+}
+
+$('#next').onclick = ()=>{
+  if(!validateStep()) return;
+  if(step===STEPS.length-1){ send(); return; }
+  step++; saveDraft(); render();
+};
+$('#prev').onclick = ()=>{ step--; saveDraft(); render(); };
+
+render();
+</script>
+</body>
+</html>
